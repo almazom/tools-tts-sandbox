@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "ask": [
+      "Read(!/root/zoo/tools_tts_sandbox/**)",
+      "Edit(!/root/zoo/tools_tts_sandbox/**)"
+    ],
+    "allow": [
+      "Read(/root/zoo/tools_tts_sandbox/**)",
+      "Edit(/root/zoo/tools_tts_sandbox/**)"
+    ]
+  },
+  "memoryImport": {},
+  "monitoring": {}
+}
