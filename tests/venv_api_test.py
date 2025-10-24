@@ -21,7 +21,9 @@ try:
     from gemini_tts import GeminiTTS
     print("✅ Module imported")
 
-    api_key = "your_api_key_here"
+    api_key = os.getenv("GEMINI_API_KEY")
+    if not api_key:
+        raise ValueError("GEMINI_API_KEY not found in environment")
     tts = GeminiTTS(api_key=api_key)
     print("✅ Client initialized")
 

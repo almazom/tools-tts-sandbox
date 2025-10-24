@@ -40,11 +40,12 @@ temp/
 *.tmp
 
 # Test outputs
-outputs/
 .tmp/outputs/
 test-artifacts/
 *.log
 
-# Audio files
+# Audio files (but preserve directory structure)
+outputs/*.wav
+outputs/*.mp3
 *.wav
 *.mp3

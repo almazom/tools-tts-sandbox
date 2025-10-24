@@ -59,7 +59,7 @@ source venv/bin/activate
 pip install google-genai google-generativeai
 
 # Environment Configuration
-export GEMINI_API_KEY="your_api_key_here"
+export GEMINI_API_KEY="your_api_key_here"  # Get from .env file
 ```
 
 #### Successful Generation Pattern

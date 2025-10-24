@@ -14,8 +14,12 @@ sys.path.insert(0, scripts_dir)
 from gemini_tts import GeminiTTS
 
 # Initialize TTS (exactly like bash script)
+api_key = os.getenv('GEMINI_API_KEY')
+if not api_key:
+    raise ValueError("GEMINI_API_KEY not found in environment")
+
 tts = GeminiTTS(
-    api_key='your_api_key_here',
+    api_key=api_key,
     model='gemini-2.5-pro-preview-tts'
 )
 

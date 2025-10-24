@@ -6,15 +6,20 @@ Test to confirm Russian text encoding issue in bash script
 
 import subprocess
 import sys
+import os
 
 # Test 1: Direct Python call (should work)
 print("🔍 Test 1: Direct Python call with Russian text")
 direct_test = '''
 import sys
+import os
 sys.path.insert(0, "/root/zoo/tools_tts_sandbox/scripts")
 from gemini_tts import GeminiTTS
 
-tts = GeminiTTS(api_key="your_api_key_here")
+api_key = os.getenv("GEMINI_API_KEY")
+if not api_key:
+    raise ValueError("GEMINI_API_KEY not found in environment")
+tts = GeminiTTS(api_key=api_key)
 result = tts.generate_speech(
     text="Привет как дела",
     voice_name="Zephyr",
@@ -37,10 +42,14 @@ print("\n" + "="*50 + "\n")
 print("🔍 Test 2: Simulating bash script variable substitution")
 bash_simulation = '''
 import sys
+import os
 sys.path.insert(0, "/root/zoo/tools_tts_sandbox/scripts")
 from gemini_tts import GeminiTTS
 
-tts = GeminiTTS(api_key="your_api_key_here")
+api_key = os.getenv("GEMINI_API_KEY")
+if not api_key:
+    raise ValueError("GEMINI_API_KEY not found in environment")
+tts = GeminiTTS(api_key=api_key)
 
 # This simulates how bash script embeds the text
 text = '''Привет как дела'''

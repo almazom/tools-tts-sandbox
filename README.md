@@ -13,29 +13,33 @@ A complete toolkit for generating podcasts using Google's Gemini API for text-to
 ## 🏗️ Project Structure
 ```
 ├── .env                              # Environment variables (API keys)
-├── .gitignore                       # Git ignore rules
 ├── requirements.txt                 # Python dependencies
-├── SETUP_GUIDE.md                   # Detailed setup instructions
+├── SETUP_GUIDE.md                   # Quick setup instructions
 ├── venv/                           # Python virtual environment
-├── .tmp/                           # Temporary test files
-│   ├── test_gemini_tts.py          # Python test script
-│   ├── test_curl_tts.sh            # Curl test script
-│   └── outputs/                    # Test outputs
-├── scripts/                        # Main application
-│   ├── gemini_tts.py               # Core TTS wrapper class
-│   └── podcast_cli.py              # Command-line interface
-└── tests/                          # Test files
+├── scripts/                        # Production scripts
+│   ├── tts-manager.sh              # Main TTS generation tool
+│   ├── tts-quick.sh                # Convenience wrapper (auto venv)
+│   ├── podcast-generator.sh        # AI podcast orchestrator
+│   ├── gemini_tts.py               # Core TTS library
+│   └── podcast_cli.py              # CLI interface
+├── outputs/                        # Generated audio files
+├── examples/                       # Usage examples
+├── docs/                           # Documentation
+│   ├── guides/                     # User guides
+│   └── analysis/                   # Project analyses
+└── tests/                          # Test suite
 ```
 
 ## 🚀 Quick Start
 
 ### 1. Environment Setup
 ```bash
-# Load environment variables
+# Option A: Manual setup
 export $(cat .env | xargs)
-
-# Activate virtual environment
 source venv/bin/activate
+
+# Option B: Use convenience wrapper (auto-activates venv)
+scripts/tts-quick.sh --help
 ```
 
 ### 2. List Available Voices
@@ -63,8 +67,22 @@ python3 scripts/podcast_cli.py multi "$SCRIPT" -s "Speaker 1:Zephyr" "Speaker 2:
 - **Fenrir** - Strong, dramatic
 
 ## 📖 Documentation
-- **[SETUP_GUIDE.md](SETUP_GUIDE.md)** - Complete setup and usage guide
-- **[API Documentation](https://ai.google.dev/gemini-api/docs)** - Official Gemini API docs
+
+### 🚀 Getting Started
+- **[SETUP_GUIDE.md](SETUP_GUIDE.md)** - Quick setup and installation
+
+### 📚 User Guides
+- **[TTS Manager Guide](docs/guides/TTS_MANAGER_GUIDE.md)** - Complete guide for tts-manager.sh
+- **[Podcast Generator Guide](docs/guides/PODCAST_GENERATOR_GUIDE.md)** - AI-powered podcast creation
+- **[REST API Guide](docs/guides/REST_API_GUIDE.md)** - API reference and examples
+
+### 📊 Project Reference
+- **[Project Structure](docs/analysis/PROJECT_STRUCTURE.md)** - Detailed codebase structure
+- **[Project Analysis](docs/analysis/PROJECT_ANALYSIS.md)** - Technical analysis
+- **[Complete Summary](docs/analysis/COMPLETE_SUMMARY.md)** - Full project summary
+
+### 🔗 External Resources
+- **[Gemini API Documentation](https://ai.google.dev/gemini-api/docs)** - Official API docs
 
 ## 🧪 Testing
 ```bash

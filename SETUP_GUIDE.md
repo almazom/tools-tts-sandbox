@@ -60,7 +60,7 @@ python3 scripts/podcast_cli.py script "AI in Healthcare" -s interview -d "10 min
 
 ### 1. Environment Variables (.env)
 ```bash
-GEMINI_API_KEY=your_api_key_here
+GEMINI_API_KEY=your_api_key_here  # Get from Google Cloud Console
 GEMINI_TTS_MODEL=gemini-2.5-flash-preview-tts
 ```
 
