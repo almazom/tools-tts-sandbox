@@ -270,8 +270,9 @@ import os
 import sys
 from pathlib import Path
 
-# Add parent directory to path
-sys.path.insert(0, os.path.join(os.path.dirname(__file__)))
+# Add scripts directory to path
+scripts_dir = '${SCRIPTS_DIR}'
+sys.path.insert(0, scripts_dir)
 
 from gemini_tts import GeminiTTS
 
