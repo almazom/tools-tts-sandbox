@@ -1,0 +1,541 @@
+# Podcast Generation Prompts Library
+# Use these prompts with Claude, Gemini, or Qodercli to generate podcast scripts
+
+version: "1.0"
+created: "2025-10-24"
+description: "Collection of optimized prompts for AI-powered podcast script generation"
+
+# ============================================================================
+# PODCAST TYPES
+# ============================================================================
+
+podcast_types:
+
+  # --------------------------------------------------------------------------
+  # Interview Podcast
+  # --------------------------------------------------------------------------
+  interview:
+    name: "Interview Podcast"
+    description: "Two-speaker interview format with host and guest"
+    speakers: 2
+    duration_minutes: 15
+    prompt_template: |
+      Generate a {duration}-minute podcast interview script on the topic: "{topic}".
+
+      **Format Requirements:**
+      - Use the format: "Host: [dialogue]" and "Guest: [dialogue]"
+      - Natural conversational flow with interruptions and agreements
+      - Include thoughtful questions and detailed answers
+      - Add natural pauses with "..." for dramatic effect
+
+      **Structure:**
+      1. Introduction (1 minute)
+         - Host introduces the topic and guest
+         - Guest's brief background
+
+      2. Main Discussion (12 minutes)
+         - 5-7 key questions covering:
+           {key_points}
+         - Follow-up questions based on answers
+         - Guest shares real-world examples and insights
+         - Host provides commentary and transitions
+
+      3. Conclusion (2 minutes)
+         - Summarize key takeaways
+         - Guest's final thoughts
+         - Host's closing remarks and call-to-action
+
+      **Tone:** {tone}
+      **Host Personality:** {host_personality}
+      **Guest Personality:** {guest_personality}
+
+      Generate approximately {word_count} words of engaging dialogue.
+
+    variables:
+      duration: "15"
+      word_count: "2500"
+      tone: "professional yet conversational, engaging and informative"
+      host_personality: "curious, enthusiastic, asks clarifying questions"
+      guest_personality: "knowledgeable, articulate, uses examples and analogies"
+      key_points: "main concepts, practical applications, common challenges, future trends, expert advice"
+
+  # --------------------------------------------------------------------------
+  # Educational Podcast
+  # --------------------------------------------------------------------------
+  educational:
+    name: "Educational Podcast"
+    description: "Two-speaker format with teacher and student/curious learner"
+    speakers: 2
+    duration_minutes: 10
+    prompt_template: |
+      Create a {duration}-minute educational podcast script explaining: "{topic}".
+
+      **Format:**
+      - Teacher: [Explains concepts clearly with examples]
+      - Learner: [Asks questions, seeks clarifications, relates to real life]
+
+      **Teaching Structure:**
+      1. Introduction (1 minute)
+         - Hook: Interesting fact or question
+         - Why this topic matters
+
+      2. Core Concepts (7 minutes)
+         - Break down {topic} into 3-4 digestible parts
+         - Teacher explains each part
+         - Learner asks questions to clarify
+         - Use analogies and real-world examples
+         - Check understanding with questions
+
+      3. Practical Application (1 minute)
+         - How to apply this knowledge
+         - Common mistakes to avoid
+
+      4. Wrap-up (1 minute)
+         - Key takeaways summary
+         - Next steps for learning more
+
+      **Teaching Style:** {teaching_style}
+      **Complexity Level:** {complexity_level}
+      **Use Analogies:** Yes, relate to everyday experiences
+
+      Generate approximately {word_count} words.
+
+    variables:
+      duration: "10"
+      word_count: "1600"
+      teaching_style: "patient, uses clear explanations, builds on prior knowledge"
+      complexity_level: "intermediate - assumes basic knowledge but explains advanced concepts"
+
+  # --------------------------------------------------------------------------
+  # News/Current Events
+  # --------------------------------------------------------------------------
+  news:
+    name: "News Discussion"
+    description: "Two hosts discussing current events with analysis"
+    speakers: 2
+    duration_minutes: 12
+    prompt_template: |
+      Generate a {duration}-minute news podcast script discussing: "{topic}".
+
+      **Format:**
+      - Anchor: [Presents facts, provides context]
+      - Analyst: [Offers analysis, explains implications]
+
+      **News Structure:**
+      1. Headlines (1 minute)
+         - Anchor introduces the main story
+         - Key facts and timeline
+
+      2. Deep Dive (8 minutes)
+         - Anchor presents detailed information
+         - Analyst provides expert commentary
+         - Discussion of multiple perspectives
+         - Analysis of implications and consequences
+         - Connection to broader context
+
+      3. Looking Ahead (2 minutes)
+         - What to watch for next
+         - Potential outcomes
+         - Expert predictions
+
+      4. Closing (1 minute)
+         - Summary of key points
+         - Where listeners can learn more
+
+      **Tone:** {tone}
+      **Approach:** Balanced, fact-based, multiple perspectives
+      **Include:** Background context, expert analysis, future implications
+
+      Generate approximately {word_count} words.
+
+    variables:
+      duration: "12"
+      word_count: "2000"
+      tone: "professional, objective, informative with light conversational elements"
+
+  # --------------------------------------------------------------------------
+  # Storytelling/Narrative
+  # --------------------------------------------------------------------------
+  storytelling:
+    name: "Storytelling Podcast"
+    description: "Two-speaker narrative with storyteller and reactor"
+    speakers: 2
+    duration_minutes: 15
+    prompt_template: |
+      Create a {duration}-minute storytelling podcast script about: "{topic}".
+
+      **Format:**
+      - Narrator: [Tells the story with vivid details and emotion]
+      - Listener: [Reacts, asks questions, adds commentary]
+
+      **Story Structure:**
+      1. Setup (2 minutes)
+         - Narrator sets the scene
+         - Introduces characters/situation
+         - Listener expresses curiosity
+
+      2. Rising Action (5 minutes)
+         - Narrator builds tension and interest
+         - Listener reacts emotionally
+         - Key plot developments
+         - Foreshadowing and suspense
+
+      3. Climax (3 minutes)
+         - The main event or revelation
+         - Narrator uses vivid, descriptive language
+         - Listener's surprised reactions
+
+      4. Resolution (3 minutes)
+         - How things unfolded
+         - Narrator shares outcomes
+         - Listener reflects on meaning
+
+      5. Reflection (2 minutes)
+         - What we learn from this story
+         - Both discuss implications
+         - Closing thoughts
+
+      **Narrative Style:** {narrative_style}
+      **Emotional Tone:** {emotional_tone}
+      **Pacing:** Build suspense gradually, use pauses effectively
+
+      Generate approximately {word_count} words with rich descriptions.
+
+    variables:
+      duration: "15"
+      word_count: "2500"
+      narrative_style: "engaging and descriptive with sensory details"
+      emotional_tone: "varies with story arc - mysterious, tense, revelatory, reflective"
+
+  # --------------------------------------------------------------------------
+  # Debate/Discussion
+  # --------------------------------------------------------------------------
+  debate:
+    name: "Debate Podcast"
+    description: "Two speakers with different perspectives discussing a topic"
+    speakers: 2
+    duration_minutes: 15
+    prompt_template: |
+      Generate a {duration}-minute debate podcast script on: "{topic}".
+
+      **Format:**
+      - Position A: [Argues one perspective with evidence]
+      - Position B: [Argues alternative perspective with evidence]
+
+      **Debate Structure:**
+      1. Introduction (2 minutes)
+         - Position A presents their stance
+         - Position B presents their stance
+         - Establish areas of agreement and disagreement
+
+      2. First Round (5 minutes)
+         - Position A presents main arguments with evidence
+         - Position B responds and counters
+         - Both cite examples, data, expert opinions
+
+      3. Second Round (5 minutes)
+         - Position B presents additional arguments
+         - Position A responds and counters
+         - Deeper dive into complexities
+
+      4. Rebuttal (2 minutes)
+         - Each side addresses strongest opposing argument
+         - Clarify misconceptions
+
+      5. Conclusion (1 minute)
+         - Each side summarizes key point
+         - Acknowledge valid points from opposition
+         - Areas where compromise might exist
+
+      **Tone:** {tone}
+      **Approach:** Respectful disagreement, evidence-based, acknowledge complexity
+      **Balance:** Give equal weight to both perspectives
+
+      Generate approximately {word_count} words.
+
+    variables:
+      duration: "15"
+      word_count: "2500"
+      tone: "respectful but passionate, intellectually rigorous, civil debate"
+
+  # --------------------------------------------------------------------------
+  # Casual Conversation
+  # --------------------------------------------------------------------------
+  casual:
+    name: "Casual Conversation"
+    description: "Two friends discussing a topic informally"
+    speakers: 2
+    duration_minutes: 12
+    prompt_template: |
+      Create a {duration}-minute casual podcast conversation about: "{topic}".
+
+      **Format:**
+      - Friend 1: [Shares thoughts, experiences, and opinions]
+      - Friend 2: [Responds naturally, adds their perspective]
+
+      **Conversation Flow:**
+      1. Warm-up (1 minute)
+         - Natural greeting and transition to topic
+         - Personal connection to subject
+
+      2. Main Discussion (9 minutes)
+         - Free-flowing conversation
+         - Share personal experiences
+         - Make jokes and laugh together
+         - Tangents and side stories (but return to topic)
+         - "Remember when..." moments
+         - Agree and disagree naturally
+
+      3. Wrap-up (2 minutes)
+         - What did we learn?
+         - Final funny observation
+         - Natural sign-off
+
+      **Conversation Style:**
+      - Natural interruptions and overlaps (use "...")
+      - Casual language and contractions
+      - Inside jokes and callbacks
+      - Authentic reactions ("Really?", "No way!", "That's wild!")
+      - Personal anecdotes and stories
+
+      **Tone:** {tone}
+      **Relationship:** {relationship}
+
+      Generate approximately {word_count} words of natural dialogue.
+
+    variables:
+      duration: "12"
+      word_count: "2000"
+      tone: "relaxed, humorous, authentic, like chatting with friends"
+      relationship: "long-time friends who know each other well"
+
+# ============================================================================
+# SPECIALIZED PROMPTS
+# ============================================================================
+
+specialized_prompts:
+
+  # Research Paper to Podcast
+  paper_to_podcast:
+    description: "Convert research paper or article into podcast dialogue"
+    speakers: 2
+    prompt_template: |
+      Convert the following content into an engaging {duration}-minute podcast dialogue:
+
+      {source_content}
+
+      **Transformation Guidelines:**
+      - Explainer: Breaks down complex concepts into accessible language
+      - Questioner: Asks clarifying questions listeners might have
+      - Avoid jargon, or explain it when necessary
+      - Use analogies to make abstract concepts concrete
+      - Highlight the "so what?" - why should listeners care?
+      - Mention surprising findings or implications
+
+      **Structure:**
+      1. Hook (30 seconds) - Most interesting finding
+      2. Overview (1 minute) - What the research is about
+      3. Main Findings (7-8 minutes) - Key points as dialogue
+      4. Implications (1 minute) - Real-world impact
+      5. Conclusion (30 seconds) - Takeaway message
+
+      Generate approximately {word_count} words.
+
+    variables:
+      duration: "10"
+      word_count: "1600"
+
+  # Topic Expansion
+  topic_expansion:
+    description: "Generate detailed podcast from simple topic"
+    speakers: 2
+    prompt_template: |
+      Create a comprehensive {duration}-minute podcast about: "{topic}".
+
+      **Research and Cover:**
+      1. What is {topic}? (Definition and overview)
+      2. Why does {topic} matter? (Relevance and importance)
+      3. How does {topic} work? (Mechanisms and processes)
+      4. Who is affected by {topic}? (Stakeholders and impact)
+      5. Where do we see {topic}? (Real-world examples)
+      6. When did {topic} emerge/change? (Historical context)
+      7. What's next for {topic}? (Future outlook)
+
+      **Dialogue Style:**
+      - Host asks questions, guides discussion
+      - Expert provides insights, examples, explanations
+      - Natural back-and-forth conversation
+      - Use current events and recent examples
+      - Include surprising facts or statistics
+
+      Generate approximately {word_count} words.
+
+    variables:
+      duration: "15"
+      word_count: "2500"
+
+  # Script Enhancement
+  enhance_script:
+    description: "Enhance existing script with better dialogue"
+    speakers: 2
+    prompt_template: |
+      Enhance the following podcast script to make it more engaging:
+
+      {original_script}
+
+      **Improvements:**
+      1. Add natural conversational elements:
+         - Interruptions, agreements ("Exactly!", "Right!")
+         - Follow-up questions and clarifications
+         - Personal reactions and observations
+
+      2. Improve pacing:
+         - Break up long monologues into dialogue
+         - Add pauses and transitions
+         - Vary sentence length for rhythm
+
+      3. Increase engagement:
+         - Add concrete examples and stories
+         - Use rhetorical questions
+         - Include surprising facts or analogies
+         - Add humor where appropriate
+
+      4. Polish language:
+         - More conversational, less formal
+         - Use contractions naturally
+         - Remove repetitive phrases
+         - Strengthen weak transitions
+
+      Maintain the core content but make it {tone}.
+
+    variables:
+      tone: "more dynamic, engaging, and natural"
+
+# ============================================================================
+# VOICE PERSONALITY TEMPLATES
+# ============================================================================
+
+personality_templates:
+
+  host_personalities:
+    curious_enthusiast:
+      traits: "Genuinely curious, enthusiastic, asks follow-up questions"
+      speaking_style: "Energetic, uses emphasis, frequent questions"
+      catchphrases: ["That's fascinating!", "Tell me more about...", "I've always wondered..."]
+
+    professional_interviewer:
+      traits: "Well-prepared, insightful, challenges assumptions respectfully"
+      speaking_style: "Clear, articulate, good at summaries and transitions"
+      catchphrases: ["Let's dive deeper into...", "What's your take on...?", "That's an important point"]
+
+    skeptical_questioner:
+      traits: "Questions assumptions, plays devil's advocate, seeks evidence"
+      speaking_style: "Direct, probing, not afraid to push back"
+      catchphrases: ["But wait, how does that...?", "I'm not sure I follow...", "Can you prove that?"]
+
+    friendly_guide:
+      traits: "Warm, approachable, helps audience understand"
+      speaking_style: "Conversational, uses simple language, makes connections"
+      catchphrases: ["Let me make sure I understand...", "For our listeners...", "That reminds me of..."]
+
+  guest_personalities:
+    knowledgeable_expert:
+      traits: "Deep expertise, explains clearly, uses examples"
+      speaking_style: "Confident, detailed, uses analogies"
+      catchphrases: ["In my experience...", "What's interesting is...", "Let me give you an example..."]
+
+    passionate_advocate:
+      traits: "Deeply cares about topic, energetic, persuasive"
+      speaking_style: "Emphatic, uses strong language, tells stories"
+      catchphrases: ["This is crucial because...", "People don't realize...", "We need to understand..."]
+
+    thoughtful_researcher:
+      traits: "Careful, nuanced, acknowledges complexity"
+      speaking_style: "Measured, cites evidence, qualifies statements"
+      catchphrases: ["The data shows...", "It's more nuanced than...", "We have to consider..."]
+
+    entertaining_storyteller:
+      traits: "Charismatic, uses humor, makes topics accessible"
+      speaking_style: "Animated, varied pace, uses vivid descriptions"
+      catchphrases: ["Picture this...", "Here's the crazy part...", "You won't believe..."]
+
+# ============================================================================
+# TONE PRESETS
+# ============================================================================
+
+tone_presets:
+  professional: "Professional, informative, well-researched, authoritative yet accessible"
+  casual: "Relaxed, conversational, friendly, like talking with knowledgeable friends"
+  educational: "Clear, patient, building understanding step-by-step, encouraging questions"
+  entertaining: "Engaging, humorous, energetic, balances information with entertainment"
+  inspirational: "Uplifting, motivational, focuses on possibilities and positive change"
+  investigative: "Probing, curious, uncovers details, asks tough questions"
+  debate: "Respectful but firm, evidence-based, acknowledges complexity"
+  storytelling: "Narrative-driven, descriptive, emotionally engaging, builds suspense"
+
+# ============================================================================
+# EXAMPLE USAGES
+# ============================================================================
+
+examples:
+  - name: "Tech Interview"
+    type: "interview"
+    topic: "The Future of Artificial Intelligence in Healthcare"
+    duration: 15
+    tone: "professional"
+    host_personality: "curious_enthusiast"
+    guest_personality: "knowledgeable_expert"
+
+  - name: "History Education"
+    type: "educational"
+    topic: "The Fall of the Roman Empire"
+    duration: 10
+    complexity_level: "intermediate"
+
+  - name: "Climate Debate"
+    type: "debate"
+    topic: "Nuclear Energy vs Renewable Energy for Climate Goals"
+    duration: 15
+
+  - name: "True Crime Story"
+    type: "storytelling"
+    topic: "The Mystery of the Missing Lighthouse Keeper"
+    duration: 15
+    narrative_style: "suspenseful"
+
+  - name: "Casual Tech Chat"
+    type: "casual"
+    topic: "Our Favorite Apps and Why We're Addicted"
+    duration: 12
+
+# ============================================================================
+# BEST PRACTICES
+# ============================================================================
+
+best_practices:
+  script_generation:
+    - "Use the speaker_name: dialogue format consistently"
+    - "Include natural pauses with ellipses (...)"
+    - "Break long paragraphs into shorter exchanges"
+    - "Add emotional cues in brackets [laughs], [pauses]"
+    - "Aim for 150-170 words per minute of audio"
+    - "Use varied sentence lengths for natural rhythm"
+    - "Include rhetorical questions to engage listeners"
+    - "Add specific examples and concrete details"
+
+  ai_prompting:
+    - "Be specific about podcast structure and duration"
+    - "Define clear speaker personalities"
+    - "Specify desired tone and style"
+    - "Request specific word count for timing accuracy"
+    - "Include content requirements (examples, data, stories)"
+    - "Ask for natural conversational elements"
+    - "Request multiple perspectives when relevant"
+
+  voice_optimization:
+    - "Use punctuation for pacing (commas, periods, dashes)"
+    - "Write out numbers and abbreviations"
+    - "Avoid complex sentences that are hard to speak"
+    - "Use contractions for natural speech"
+    - "Include pronunciation guidance for difficult words"
+    - "Add [pause] markers for dramatic effect"
