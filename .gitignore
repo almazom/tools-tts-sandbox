@@ -44,3 +44,7 @@ outputs/
 .tmp/outputs/
 test-artifacts/
 *.log
+
+# Audio files
+*.wav
+*.mp3

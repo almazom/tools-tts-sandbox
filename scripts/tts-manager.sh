@@ -25,7 +25,7 @@ NC='\033[0m' # No Color
 PROVIDER="gemini"           # Default provider: gemini or minimax
 NUM_SPEAKERS=1              # Number of speakers: 1 or 2
 OUTPUT_DIR="./outputs"      # Output directory
-OUTPUT_FORMAT="wav"         # Output format
+OUTPUT_FORMAT="mp3"         # Output format
 
 # Gemini Configuration
 GEMINI_MODEL="gemini-2.5-pro-preview-tts"  # or gemini-2.5-flash-tts
@@ -255,6 +255,66 @@ check_api_keys() {
 }
 
 ################################################################################
+# Audio Format Conversion
+################################################################################
+
+convert_audio_format() {
+    local input_file=$1
+    local target_format=$2
+
+    # Check if ffmpeg is available
+    if ! command -v ffmpeg &> /dev/null; then
+        print_warning "ffmpeg not found. Installing audio conversion dependencies..."
+        apt update && apt install -y ffmpeg 2>/dev/null || {
+            print_error "Could not install ffmpeg. Please install manually: apt install ffmpeg"
+            return 1
+        }
+    fi
+
+    # Check if input file exists
+    if [[ ! -f "$input_file" ]]; then
+        print_error "Input file not found: $input_file"
+        return 1
+    fi
+
+    # Get file info
+    local input_name="${input_file%.*}"
+    local input_ext="${input_file##*.}"
+
+    # Create temporary file in .tmp directory
+    mkdir -p .tmp
+    local temp_file=".tmp/$(basename "$input_name").${target_format}"
+
+    print_section "Converting to $target_format format"
+
+    case "$target_format" in
+        "mp3")
+            ffmpeg -y -i "$input_file" -codec:a libmp3lame -q:a 2 "$temp_file" 2>/dev/null
+            ;;
+        "flac")
+            ffmpeg -y -i "$input_file" -c:a flac "$temp_file" 2>/dev/null
+            ;;
+        *)
+            print_warning "Unsupported format: $target_format. Keeping original format."
+            return 0
+            ;;
+    esac
+
+    if [[ $? -eq 0 && -f "$temp_file" ]]; then
+        # Replace original file with converted file
+        mv "$temp_file" "$input_name.$target_format"
+        rm -f "$input_file"  # Remove original WAV file
+
+        print_success "Successfully converted to $target_format format"
+        print_info "New file: $input_name.$target_format"
+    else
+        print_error "Audio conversion failed"
+        rm -f "$temp_file"
+        return 1
+    fi
+}
+
+################################################################################
 # Gemini TTS Generation
 ################################################################################
 
@@ -264,10 +324,14 @@ generate_gemini_tts() {
     local output_file=$1
     local text=$2
 
+    # Encode text to base64 to preserve Unicode characters
+    local encoded_text=$(echo -n "$text" | base64 -w 0)
+
     # Build Python script for Gemini TTS
     local python_script=$(cat <<PYTHON
 import os
 import sys
+import base64
 from pathlib import Path
 
 # Add scripts directory to path
@@ -282,17 +346,25 @@ tts = GeminiTTS(
     model='${GEMINI_MODEL}'
 )
 
-# Configuration
-text = '''${text}'''
-output_file = '${output_file}'
+# Configuration - decode base64 text to preserve Unicode
+encoded_text = '${encoded_text}'
+text = base64.b64decode(encoded_text).decode('utf-8')
+
+# Always generate WAV first, then convert if needed
+original_output_file = '${output_file}'
+if original_output_file.endswith('.mp3') or original_output_file.endswith('.flac'):
+    output_file = original_output_file.rsplit('.', 1)[0] + '.wav'
+else:
+    output_file = original_output_file
+
 num_speakers = ${NUM_SPEAKERS}
 
 try:
     if num_speakers == 1:
         print("Generating single speaker audio...")
-        tts.generate_single_speaker(
+        tts.generate_speech(
             text=text,
-            voice='${GEMINI_VOICE_1}',
+            voice_name='${GEMINI_VOICE_1}',
             output_file=output_file,
             temperature=${GEMINI_TEMPERATURE}
         )
@@ -305,9 +377,13 @@ try:
             'Host': '${GEMINI_VOICE_1}',
             'Guest': '${GEMINI_VOICE_2}'
         }
-        tts.generate_multi_speaker_interview(
+        speaker_list = [
+            {'speaker': k, 'voice': v}
+            for k, v in speakers.items()
+        ]
+        tts.generate_podcast_interview(
             script=text,
-            speaker_configs=speakers,
+            speaker_configs=speaker_list,
             output_file=output_file,
             temperature=${GEMINI_TEMPERATURE}
         )
@@ -325,6 +401,19 @@ PYTHON
 
     if [[ $? -eq 0 ]]; then
         print_success "Gemini TTS generation completed"
+
+        # Convert to requested format if needed
+        if [[ "$OUTPUT_FORMAT" != "wav" ]]; then
+            # The actual WAV file that was created is in $output_file (from Python script)
+            local actual_wav_file="$output_file"
+            local target_file="${OUTPUT_FILE}"
+
+            convert_audio_format "$actual_wav_file" "$OUTPUT_FORMAT"
+
+            # Update output_file to point to the converted file
+            output_file="$target_file"
+        fi
+
         print_info "Output: $output_file"
     else
         print_error "Gemini TTS generation failed"
@@ -412,6 +501,9 @@ else:
 ################################################################################
 
 main() {
+    # Set script directory
+    SCRIPTS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
     print_header
 
     # Parse command line arguments
@@ -600,6 +692,11 @@ main() {
             OUTPUT_FILE="${OUTPUT_DIR}/tts_${PROVIDER}_single_${timestamp}.${OUTPUT_FORMAT}"
         else
             OUTPUT_FILE="${OUTPUT_DIR}/tts_${PROVIDER}_multi_${timestamp}.${OUTPUT_FORMAT}"
+        fi
+    else
+        # Ensure output file has correct extension
+        if [[ ! "$OUTPUT_FILE" == *.* ]]; then
+            OUTPUT_FILE="${OUTPUT_FILE}.${OUTPUT_FORMAT}"
         fi
     fi
 
