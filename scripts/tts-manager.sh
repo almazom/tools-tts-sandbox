@@ -260,7 +260,9 @@ check_api_keys() {
 
 convert_audio_format() {
     local input_file=$1
-    local target_format=$2
+    local target_filename=$2
+
+    print_info "Converting $input_file to $target_filename"
 
     # Check if ffmpeg is available
     if ! command -v ffmpeg &> /dev/null; then
@@ -277,22 +279,17 @@ convert_audio_format() {
         return 1
     fi
 
-    # Get file info
-    local input_name="${input_file%.*}"
-    local input_ext="${input_file##*.}"
-
-    # Create temporary file in .tmp directory
-    mkdir -p .tmp
-    local temp_file=".tmp/$(basename "$input_name").${target_format}"
+    # Determine target format from filename
+    local target_format="${target_filename##*.}"
 
     print_section "Converting to $target_format format"
 
     case "$target_format" in
         "mp3")
-            ffmpeg -y -i "$input_file" -codec:a libmp3lame -q:a 2 "$temp_file" 2>/dev/null
+            ffmpeg -y -i "$input_file" -codec:a libmp3lame -q:a 2 "$target_filename" 2>/dev/null
             ;;
         "flac")
-            ffmpeg -y -i "$input_file" -c:a flac "$temp_file" 2>/dev/null
+            ffmpeg -y -i "$input_file" -c:a flac "$target_filename" 2>/dev/null
             ;;
         *)
             print_warning "Unsupported format: $target_format. Keeping original format."
@@ -300,16 +297,15 @@ convert_audio_format() {
             ;;
     esac
 
-    if [[ $? -eq 0 && -f "$temp_file" ]]; then
-        # Replace original file with converted file
-        mv "$temp_file" "$input_name.$target_format"
-        rm -f "$input_file"  # Remove original WAV file
+    if [[ $? -eq 0 && -f "$target_filename" ]]; then
+        # Remove original WAV file
+        rm -f "$input_file"
 
         print_success "Successfully converted to $target_format format"
-        print_info "New file: $input_name.$target_format"
+        print_info "New file: $target_filename"
     else
         print_error "Audio conversion failed"
-        rm -f "$temp_file"
+        rm -f "$target_filename"
         return 1
     fi
 }
@@ -396,22 +392,24 @@ except Exception as e:
 PYTHON
 )
 
-    # Execute Python script
+    # Execute Python script and capture the actual output filename
     python3 -c "$python_script"
+    local actual_wav_file=$(ls -t *.wav 2>/dev/null | head -1)
 
     if [[ $? -eq 0 ]]; then
         print_success "Gemini TTS generation completed"
 
         # Convert to requested format if needed
-        if [[ "$OUTPUT_FORMAT" != "wav" ]]; then
-            # The actual WAV file that was created is in $output_file (from Python script)
-            local actual_wav_file="$output_file"
-            local target_file="${OUTPUT_FILE}"
+        if [[ "$OUTPUT_FORMAT" != "wav" && -n "$actual_wav_file" ]]; then
+            local target_filename="${OUTPUT_FILE}"
 
-            convert_audio_format "$actual_wav_file" "$OUTPUT_FORMAT"
+            print_info "Converting WAV file: $actual_wav_file to target: $target_filename"
+            convert_audio_format "$actual_wav_file" "$target_filename"
 
             # Update output_file to point to the converted file
-            output_file="$target_file"
+            output_file="$target_filename"
+        else
+            output_file="$actual_wav_file"
         fi
 
         print_info "Output: $output_file"
